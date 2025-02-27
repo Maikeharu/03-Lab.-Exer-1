@@ -1,5 +1,6 @@
 class Token:
     def __init__(self, type_, value):
+        # client string input, e.g. "3 + 5", "12 - 5", etc
         self.type = type_
         self.value = value
 
@@ -17,7 +18,9 @@ INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
 class Lexer:
     def __init__(self, text):
         self.text = text
+        #self.pos is an index into self.text
         self.pos = 0
+        # current token instance
         self.current_char = self.text[self.pos]
 
     def error(self):
@@ -26,7 +29,7 @@ class Lexer:
     def advance(self):
         self.pos += 1
         if self.pos > len(self.text) - 1:
-            self.current_char = None  # End of input
+            self.current_char = None  # Indicates end of input
         else:
             self.current_char = self.text[self.pos]
 
@@ -61,6 +64,7 @@ class Lexer:
 class Interpreter:
     def __init__(self, text):
         self.lexer = Lexer(text)
+        # set current token to the first token taken from the input
         self.current_token = self.lexer.get_next_token()
 
     def error(self):
@@ -73,22 +77,28 @@ class Interpreter:
             self.error()
 
     def expr(self):
-        # Expect an INTEGER
+        # we expect the current token to be an integer
         left = self.current_token
         self.eat(INTEGER)
 
-        # Expect either PLUS or MINUS
+        # we expect the current token to be either a '+' or '-'
         op = self.current_token
         if op.type == PLUS:
             self.eat(PLUS)
         elif op.type == MINUS:
             self.eat(MINUS)
 
-        # Expect another INTEGER
+        # we expect the current token to be an integer
         right = self.current_token
         self.eat(INTEGER)
+        # after the above call the self.current_token is set to
+        # EOF token
 
-        # Perform the calculation and return result
+        # at this point either the INTEGER PLUS INTEGER or
+        # the INTEGER MINUS INTEGER sequence of tokens
+        # has been successfully found and the method can just
+        # return the result of adding or substracting two integers,
+        # thus effectively interpreting client input
         if op.type == PLUS:
             return left.value + right.value
         else:
