@@ -61,7 +61,7 @@ class Lexer:
         return Token(EOF, None)
 
 
-class Interpreter:
+class Interpreter(object):
     def __init__(self, text):
         self.lexer = Lexer(text)
         # set current token to the first token taken from the input
